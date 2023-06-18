@@ -1,0 +1,2 @@
+#define MAX_PACKET_BITS  10
+#define BIT32_ARRAY_SIZE 4
