@@ -62,7 +62,6 @@ template void uart_comm_ovidius::sendBack4bytes_num<float>(float, Stream&, uint8
 template void uart_comm_ovidius::sendBack4bytes_num<long>(long, Stream&, uint8_t * );
 
 void uart_comm_ovidius::print4Bytes(Stream& debug_serial, Stream& comm_serial, uint8_t * Byte4Array) {
-    debug_serial.println("8");
     for (int i = 0; i < BIT32_ARRAY_SIZE; i++){
         while(!comm_serial.available());
         *(Byte4Array + i) = comm_serial.read();
@@ -74,19 +73,20 @@ void uart_comm_ovidius::print4Bytes(Stream& debug_serial, Stream& comm_serial, u
 template<typename H>
 void uart_comm_ovidius::get4Bytes(H& received_val, Stream& debug_serial, Stream& comm_serial, uint8_t * Byte4Array, uint8_t Get4BytesCmd) {
 // Starts comm, sends sync byte, waits for "SYNCED" response, receives 4 bytes. Prints debug msgs!
-    do {
-        comm_serial.write(Get4BytesCmd);
+    comm_serial.write(Get4BytesCmd);  // -> "talks" to read() in i3dfmu::execute_reqeust
+    // next lines commented out since no SYNCED byte is used in else if's of the i3dfmu::execute_reqeust
+    /*do {
         while(!comm_serial.available());
         _synced_response = comm_serial.read();
-    } while (!(_synced_response == SYNCED));
-    //debug_serial.println("SYNCED");
+    } while (!(_synced_response == SYNCED)); */
     for (int i = 0; i < BIT32_ARRAY_SIZE; i++){
         while(!comm_serial.available());
         *(Byte4Array + i) = comm_serial.read();
     }
     // Just print next, only for debug
     merge_bytes_to_32bits(received_val, Byte4Array);
-    debug_serial.print("Received Data: "); debug_serial.print(received_val,DEC);
+    // Uncomment next line for debug use
+    //debug_serial.print("Received Data: "); debug_serial.print(received_val,DEC);
    
 }
 template void uart_comm_ovidius::get4Bytes<float>(float&, Stream&, Stream& , uint8_t *, uint8_t );
@@ -95,16 +95,15 @@ template void uart_comm_ovidius::get4Bytes<long>(long&, Stream&, Stream& , uint8
 template<typename H>
 void uart_comm_ovidius::get4Bytes_num(H & received_val, Stream& comm_serial, uint8_t * Byte4Array, uint8_t Get4BytesCmd) {
 // Starts comm, sends sync byte, waits for "SYNCED" response, receives 4 bytes.
-    do {
-        comm_serial.write(Get4BytesCmd);
+    comm_serial.write(Get4BytesCmd);
+    /*do {
         while(!comm_serial.available());
         _synced_response = comm_serial.read();
-    } while (!(_synced_response == SYNCED));
+    } while (!(_synced_response == SYNCED)); */
     for (int i = 0; i < BIT32_ARRAY_SIZE; i++){
         while(!comm_serial.available());
         *(Byte4Array + i) = comm_serial.read();
     }
-    // Just print next, only for debug
     merge_bytes_to_32bits(received_val, Byte4Array);
 }
 template void uart_comm_ovidius::get4Bytes_num<float&>(float&, Stream& , uint8_t *, uint8_t );

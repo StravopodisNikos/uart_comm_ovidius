@@ -11,7 +11,7 @@
 #define Serial2I9DIMU   Serial3         
 
 #define SerialUSB_BAUD      115200
-#define Serial2I3DFMU_BAUD  115200
+#define Serial2I3DFMU_BAUD  250000
 
 // Sensor's Integrated Units ports (Add for each unit in separate place)
 // 1. I3DFMU - Integrated 3D Force Measurement - Arduino Mega

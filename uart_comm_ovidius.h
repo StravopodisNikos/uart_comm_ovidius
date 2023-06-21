@@ -25,6 +25,8 @@ namespace uart_comm_ns {
         bool _timeout_error;
 
     public:
+        // Timing vars for .ino file
+        unsigned long comm_start;
         unsigned long last_get_data_fx_ms;        
         unsigned long last_get_data_fy_ms; 
         unsigned long last_get_data_fz_ms; 
