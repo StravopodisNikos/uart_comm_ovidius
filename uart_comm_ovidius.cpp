@@ -56,6 +56,23 @@ void uart_comm_ovidius::sendBack4bytes_num(S val, Stream& comm_serial) {
 template void uart_comm_ovidius::sendBack4bytes_num<float>(float, Stream&);
 template void uart_comm_ovidius::sendBack4bytes_num<long>(long, Stream&);
 
+template<typename T>
+void uart_comm_ovidius::send4Bytes(T val, Stream& debug_serial, Stream& comm_serial, uint8_t Send4BytesCmd) {
+    // Sents sync byte first
+    comm_serial.write(Send4BytesCmd); 
+    // Break val to 4 bytes
+    split_32bits_to_bytes(val);
+    // Send the 4 bytes
+    for (int i = 0; i < BIT32_ARRAY_SIZE; i++){
+        debug_serial.print("Sent Byte["); debug_serial.print(i); debug_serial.print("]:");
+        debug_serial.println(_Byte4Array[i],BIN);
+        comm_serial.write(_Byte4Array[i]);
+    }
+    return;
+}
+template void uart_comm_ovidius::send4Bytes<float>(float, Stream&, Stream&, uint8_t);
+template void uart_comm_ovidius::send4Bytes<long>(long, Stream&, Stream&, uint8_t);
+
 void uart_comm_ovidius::print4Bytes(Stream& debug_serial, Stream& comm_serial) {
     for (int i = 0; i < BIT32_ARRAY_SIZE; i++){
         while(!comm_serial.available());
@@ -81,7 +98,7 @@ void uart_comm_ovidius::get4Bytes(H& received_val, Stream& debug_serial, Stream&
     // Just print next, only for debug
     merge_bytes_to_32bits(received_val);
     // Uncomment next line for debug use
-    //debug_serial.print("Received Data: "); debug_serial.print(received_val,DEC);
+    debug_serial.print("Received Data: "); debug_serial.print(received_val,DEC);
    
 }
 template void uart_comm_ovidius::get4Bytes<float>(float&, Stream&, Stream& , uint8_t );
@@ -103,6 +120,18 @@ void uart_comm_ovidius::get4Bytes_num(H & received_val, Stream& comm_serial, uin
 }
 template void uart_comm_ovidius::get4Bytes_num<float&>(float&, Stream& , uint8_t );
 template void uart_comm_ovidius::get4Bytes_num<long&>(long&, Stream& , uint8_t );
+
+template<typename H>
+void uart_comm_ovidius::getBack4bytes_num(H & received_val, Stream& comm_serial) {
+    // just reads 4 incoing bytes
+    for (int i = 0; i < BIT32_ARRAY_SIZE; i++){
+        while(!comm_serial.available());
+        *(_Byte4Array + i) = comm_serial.read();
+    }
+    merge_bytes_to_32bits(received_val);
+}
+template void uart_comm_ovidius::getBack4bytes_num<float&>(float&, Stream&);
+template void uart_comm_ovidius::getBack4bytes_num<long&>(long&, Stream&);
 
 bool uart_comm_ovidius::ping_unit_timeout(Stream& comm_serial, uint8_t ConnectCmd) {
     _ping_unit_start = millis();
@@ -127,7 +156,7 @@ bool uart_comm_ovidius::ping_unit_timeout(Stream& comm_serial, uint8_t ConnectCm
 }
 
 void uart_comm_ovidius::serialPrintDataBuffer(float *Buffer, int buffer_size) {
-    // Used by any subsystem to print data to a serial port, the python script 
+    // Used by any DUE subsystem to print data to a serial port, the python script 
     // listening to the specified serial port must KNOW HOW to handle the data
     // (each script is written based on the subsystem publishing the data)
     // Can be used by subsystem based on DUE Board. SerialUSB Port is used!

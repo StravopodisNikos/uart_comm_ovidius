@@ -5,10 +5,18 @@
 #include <Stream.h>   
 #include <utility/sync_codes.h>
 #include <utility/packets.h>
-#include <utility/ports.h>
+
 #include <utility/operation.h>
 #include <utility/debug.h>
 #include <C:\Users\Nikos\Documents\Arduino\libraries\i3dfmu\utility\calibration.h>
+
+#if defined(ARDUINO_AVR_MEGA2560)
+    #include <utility/ports_avr.h>
+#elif defined(ARDUINO_AVR_UNO)
+    #include <utility/ports_avr.h>
+#else defined(ARDUINO_SAM_DUE)
+    #include <utility/ports.h>
+#endif
 
 namespace uart_comm_ns {
 
@@ -51,12 +59,18 @@ namespace uart_comm_ns {
         template<typename S>
         void sendBack4bytes_num(S val, Stream& comm_serial);
 
+        template<typename T>
+        void send4Bytes(T val, Stream& debug_serial, Stream& comm_serial, uint8_t Send4BytesCmd);
+
         void print4Bytes(Stream& debug_serial, Stream& comm_serial);
 
         template<typename H>
         void get4Bytes(H & received_val, Stream& debug_serial, Stream& comm_serial, uint8_t Get4BytesCmd);
         template<typename H>
         void get4Bytes_num(H & received_val, Stream& comm_serial, uint8_t Get4BytesCmd);
+
+        template<typename H>
+        void getBack4bytes_num(H & received_val, Stream& comm_serial);
 
         bool ping_unit_timeout( Stream& comm_serial, uint8_t ConnectCmd);
 

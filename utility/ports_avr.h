@@ -1,6 +1,6 @@
 // Master DUE Ports
 #define DXL_SERIAL          Serial
-#define DEBUG_SERIAL        SerialUSB
+//#define DEBUG_SERIAL        SerialUSB
 #define SerialJ1Actuator    Serial1         
 #define SerialIDDH          Serial2         
 //#define Serial3           --unused yet--
@@ -16,7 +16,8 @@
 
 // ASA (Active Stepper Actuator) - DUE board 
 #define DEBUG_ASA          Serial
-#define SERIAL_DATA_ASA    SerialUSB
+//#define SERIAL_DATA_ASA    SerialUSB
+#define SERIAL_DATA_ASA    Serial3
 #define SerialASA2Master   Serial1 
 #define SerialASA2LOGGER   Serial2 
 #define INIT_VARS          7
